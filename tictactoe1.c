@@ -162,8 +162,7 @@ int main() {
 
 	printf("TIC-Tac-Toe! \n");
           
-	printf ( "Enter the size of the board - \n");
-	scanf("%d ", &N);
+	
 
            do  {
                 printf("Enter board size N (3 <= N <= 10): ");
@@ -178,7 +177,7 @@ int main() {
 	    printf("2. user vs computer \n");
 	    printf("3. three players  \n");
 	    printf( " enter your choice ( 1-3) \n");
-	    printf("%d", &gameMode);
+	    scanf("%d", &gameMode);
 
 
          int numPlayers;
@@ -200,7 +199,7 @@ int main() {
         for (int i = 0; i < 3; i++) {
             char choice;
             printf("Is Player %d (%c) a computer? (y/n): ", i + 1, symbols[i]);
-            scanf(" %c", &choice);
+            scanf("%c", &choice);
             players[i].mode = (choice == 'y' || choice == 'Y') ? 1 : 0;
             players[i].symbol = symbols[i];
         }
