@@ -24,7 +24,7 @@ FILE *logFile;
  void createboard(int size) {
 	 N = size;
 	 board  = (char **)malloc( N * sizeof(char *));
-	 for (int = i =0; i<N; i++){
+	 for (int  i =0; i<N; i++){
 		 board[i] =(char *)malloc(N * sizeof(char));
 		 for (int j = 0; j<N; j++){
 			 board[i][j] = ' ';
@@ -77,7 +77,7 @@ void logBoard() {
         }
     }
     fprintf(logFile, "\n");
-    fflush(logFile)
+    fflush(logFile);
 	  
 	  // free dynamically aloocate board
 
@@ -89,7 +89,7 @@ void logBoard() {
 
 // cheking the validity of a move 
   
- void validityofmove(int row , int cel){
+ int  validityofmove(int row , int col){
         return (row >= 0 && row < N && col >= 0 && col < N && board[row][col] == ' ');
 }
 
@@ -107,7 +107,7 @@ void logBoard() {
   }
 
 // create random move to computer
-   void computemove(int *row , int *col){
+   void computermove(int *row , int *col){
 	   do{
 		   *row = rand() % N;
 		   *col = rand() % N;
@@ -118,7 +118,7 @@ void logBoard() {
 
 void logmove(int playernum, char symbol, int row, int col){
 	if(logFile){
-		fprintf(logFile , "player %d (%c) moved to (%d,%d)\n", playerNum + 1, symbol,row,col);
+		fprintf(logFile , "player %d (%c) moved to (%d,%d)\n", playernum + 1, symbol,row,col);
 		fflush(logFile);
 	}
 }
@@ -127,7 +127,7 @@ void logmove(int playernum, char symbol, int row, int col){
 // first check rowns and columns
  int check(char symbol){
 
-	 for(int i = o; i<N; i++){
+	 for(int i = 0; i<N; i++){
 		 int rowwin = 1, colwin = 1;
 		 for ( int j = 0; j<N; j++){
 			        if (board[i][j] != symbol) rowwin = 0;
@@ -140,10 +140,10 @@ void logmove(int playernum, char symbol, int row, int col){
 	  
 	 int diagon1win = 1, diagon2win = 1;
 	 for(int i = 0; i<N; i++){
-		        if (board[i][i] != symbol) diagonal1win = 0;
-        if (board[i][N - 1 - i] != symbol) diagonal2Win = 0;
+		        if (board[i][i] != symbol) diagon1win = 0;
+        if (board[i][N - 1 - i] != symbol) diagon2win = 0;
     }
-    return diagonal1win || diagonal2win;
+    return diagon1win || diagon2win;
 }
 
 // check if draw
@@ -156,4 +156,108 @@ int draw(){
 	return 1;
 }
 
+int main() {
+	srand(time(NULL));
+	int gameMode;
 
+	printf("TIC-Tac-Toe! \n");
+          
+	printf ( "Enter the size of the board - \n");
+	scanf("%d ", &N);
+
+	if( N<3 || N >10)
+		printf("invalid try again \n");
+        else 
+		printf(" you have entered %d \n", N);
+
+	// getting the game mode 
+	
+
+            printf("select the game mode \n");
+	    printf("1. user vs user\n");
+	    printf("2. user vs computer \n");
+	    printf("3. three players  \n");
+	    printf( " enter your choice ( 1-3) \n");
+	    printf("%d", &gameMode);
+
+
+         int numPlayers;
+    Player players[Max_players];
+
+    if (gameMode == 1) {  // Two Users
+        numPlayers = 2;
+        players[0].mode = 0; players[0].symbol = 'X';
+        players[1].mode = 0; players[1].symbol = 'O';
+    } 
+    else if (gameMode == 2) {  // User vs Computer
+        numPlayers = 2;
+        players[0].mode = 0; players[0].symbol = 'X'; // User
+        players[1].mode = 1; players[1].symbol = 'O'; // Computer
+    } 
+    else if (gameMode == 3) {  // Three players
+        numPlayers = 3;
+        // At least one human
+        for (int i = 0; i < 3; i++) {
+            char choice;
+            printf("Is Player %d (%c) a computer? (y/n): ", i + 1, symbols[i]);
+            scanf(" %c", &choice);
+            players[i].mode = (choice == 'y' || choice == 'Y') ? 1 : 0;
+            players[i].symbol = symbols[i];
+        }
+    } 
+    else {
+        printf("Invalid choice!\n");
+        return 1;
+    }
+
+    
+    createboard(N);
+
+    // Open log file
+    logFile = fopen("game_log.txt", "w");
+    if (!logFile) {
+        perror("Error opening log file");
+        printf("Continuing without logging...\n");
+    }
+
+    // --- Game loop ---
+    int currentPlayer = 0;
+    int gameOver = 0;
+    displayBoard();
+
+    while (!gameOver) {
+        int row, col;
+        Player p = players[currentPlayer];
+
+        printf("Turn: Player %d (%c)\n", currentPlayer + 1, p.symbol);
+
+        if (p.mode) {
+            computermove(&row, &col);
+        } else {
+            usermove(&row, &col, p.symbol);
+        }
+
+        board[row][col] = p.symbol;
+        logmove(currentPlayer, p.symbol, row, col);
+        logBoard();
+        displayBoard();
+
+        if (check(p.symbol)) {
+            printf("Player %d (%c) WINS!\n", currentPlayer + 1, p.symbol);
+            if (logFile)
+                fprintf(logFile, "Player %d (%c) wins!\n", currentPlayer + 1, p.symbol);
+            gameOver = 1;
+        } else if (draw()) {
+            printf("The game is a DRAW.\n");
+            if (logFile)
+                fprintf(logFile, "Game ended in a draw.\n");
+            gameOver = 1;
+        }
+
+        currentPlayer = (currentPlayer + 1) % numPlayers;
+    }
+
+    if (logFile) fclose(logFile);
+    freeboard();
+    return 0;
+}
