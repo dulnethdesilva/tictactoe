@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
 #define Max_players 3
 #define Max_symbols 3
 
@@ -78,6 +77,7 @@ void logBoard() {
     }
     fprintf(logFile, "\n");
     fflush(logFile);
+}
 	  
 	  // free dynamically aloocate board
 
@@ -114,7 +114,7 @@ void logBoard() {
 	   }while (!validityofmove(*row, *col));
 	   printf("computer choose : %d %d \n", *row, *col);
 	   }
-}
+
 
 void logmove(int playernum, char symbol, int row, int col){
 	if(logFile){
@@ -165,10 +165,10 @@ int main() {
 	printf ( "Enter the size of the board - \n");
 	scanf("%d ", &N);
 
-	if( N<3 || N >10)
-		printf("invalid try again \n");
-        else 
-		printf(" you have entered %d \n", N);
+           do  {
+                printf("Enter board size N (3 <= N <= 10): ");
+                scanf("%d", &N);
+      } while (N < 3 || N > 10); 
 
 	// getting the game mode 
 	
